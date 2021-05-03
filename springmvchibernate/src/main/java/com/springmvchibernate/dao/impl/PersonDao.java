@@ -97,7 +97,11 @@ public class PersonDao implements IPersonDao {
 		try (Session session = hibernateConfig.getFactory().openSession()) {
 			transaction = session.beginTransaction();
 			Person ps = session.find(Person.class, person.getId());
-			 
+			 ps.setLastName(person.getLastName());
+			 ps.setFirstName(person.getFirstName());
+			 ps.setMoney(person.getMoney());
+			 session.saveOrUpdate(ps);
+			 transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
 		}

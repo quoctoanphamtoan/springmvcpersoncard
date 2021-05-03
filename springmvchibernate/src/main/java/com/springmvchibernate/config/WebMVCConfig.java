@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.springmvchibernate.controller")
+@ComponentScan(basePackages = "com.springmvchibernate") 
 public class WebMVCConfig implements WebMvcConfigurer{
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {

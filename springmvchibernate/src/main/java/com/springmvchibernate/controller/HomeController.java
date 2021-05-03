@@ -2,6 +2,12 @@ package com.springmvchibernate.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,13 +19,19 @@ import com.springmvchibernate.dao.impl.CardDao;
 import com.springmvchibernate.dao.impl.PersonDao;
 import com.springmvchibernate.entity.CreditCard;
 import com.springmvchibernate.entity.Person;
-import com.sun.java.swing.plaf.motif.resources.motif;
 
 @Controller
+@RequestMapping("/")
 public class HomeController {
 	private PersonDao peson = new PersonDao();
 	private CardDao CardDao = new CardDao();
 
+	
+	@RequestMapping(value = "login",method = RequestMethod.GET)
+	public String login() { 
+		return "loginForm";
+	}
+	
 	@RequestMapping(value = "home")
 	public String index(ModelMap modelMap) {
 		List<Person> listperson = peson.getAllPerson();
@@ -77,47 +89,65 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "card/deletecard/{cardId}/{personId}", method = RequestMethod.GET)
-	public String deleteCard(@PathVariable("cardId") int cardId, @PathVariable("personId") int personId) { 
+	public String deleteCard(@PathVariable("cardId") int cardId, @PathVariable("personId") int personId) {
 		CardDao.deleteCard(cardId);
 		return "redirect:/card/" + personId;
 
 	}
+
 	@RequestMapping(value = "editPerson/{personId}", method = RequestMethod.GET)
-	public String showFormEditPerson(@PathVariable("personId") int personId,ModelMap modelMap ) { 
+	public String showFormEditPerson(@PathVariable("personId") int personId, ModelMap modelMap) {
 		Person person = peson.getPersonById(personId);
 		modelMap.addAttribute("personEdit", person);
 		return "editPerson";
 
 	}
+
 	@RequestMapping(value = "editPerson/edit/{personId}", method = RequestMethod.POST)
-	public String editPerson(@ModelAttribute("person") Person personEdit,@PathVariable("personId") int personId) { 
+	public String editPerson(@ModelAttribute("person") Person personEdit, @PathVariable("personId") int personId) {
 		personEdit.setId(personId);
-		peson.saveOrUpdate(personEdit); 
+		peson.EditPerson(personEdit);
 		return "redirect:/home";
 
 	}
+
 	@RequestMapping(value = "editPerson/home", method = RequestMethod.GET)
-	public String backHomeEdit() { 
-		 
+	public String backHomeEdit() {
+
 		return "redirect:/home";
 
 	}
+
 	@RequestMapping(value = "card/editCard/{cardId}/{personId}", method = RequestMethod.GET)
-	public String showFormEditCard(@PathVariable("cardId") int cardId,@PathVariable("personId") int personId,ModelMap modelMap) {
-		modelMap.addAttribute("cardEdit",CardDao.getCardById(cardId)); 
-		modelMap.addAttribute("personId",personId); 
-		
-		return "editCard";
+	public String showFormEditCard(@PathVariable("cardId") int cardId, @PathVariable("personId") int personId,
+			ModelMap modelMap) {
+		modelMap.addAttribute("cardEdit", CardDao.getCardById(cardId));
+		modelMap.addAttribute("personId", personId);
+
+		return "redirect:/home";
 
 	}
+
 	@RequestMapping(value = "card/editCard/{cardId}/edit/{cardId}/{personId}", method = RequestMethod.POST)
-	public String editCard(@ModelAttribute("cardEdit") CreditCard cardEdit,@PathVariable("cardId") int cardId,@PathVariable("personId") int personId) {
+	public String editCard(@ModelAttribute("cardEdit") CreditCard cardEdit, @PathVariable("cardId") int cardId,
+			@PathVariable("personId") int personId) {
 		cardEdit.setId(cardId);
 		CardDao.editCard(cardEdit);
-		
-		return "redirect:/card/"+personId;
+
+		return "redirect:/card/" + personId;
 
 	}
+
+	@RequestMapping(value = "dangxuat",method = RequestMethod.GET)
+	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			new SecurityContextLogoutHandler().logout(request, response, authentication);
+		}
+		return "redirect:/home";
+	}
+	
+//	dangxuat
 //	card/editCard/23/edit/23/6
 //	card/editCard/23
 //	editCard/${item.getId()}

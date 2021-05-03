@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,6 +21,11 @@
 </head>
 <body>
 	<div class="container">
+		<security:authorize access="isAuthenticated()">
+			<security:authentication property="principal" var="user" />
+			<a href="dangxuat" class="btn btn-success" role="button">Đăng
+				xuất</a>
+		</security:authorize>
 		<h1>List Person</h1>
 		<div class="row">
 			<div class="col-9">
@@ -41,9 +49,9 @@
 								<td>${item.getMoney()}</td>
 								<td><a href="card/${item.getId()}" class="btn btn-success"
 									role="button">Card</a> <a href="editPerson/${item.getId()}"
-									class="btn btn-success" role="button">Edit</a> 
-									<a href="remove/${item.getId()}"
-									class="btn btn-danger" role="button">Delete</a></td>
+									class="btn btn-success" role="button">Edit</a> <a
+									href="remove/${item.getId()}" class="btn btn-danger"
+									role="button">Delete</a></td>
 							</tr>
 						</c:forEach>
 					</tbody>
